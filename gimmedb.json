@@ -2,7 +2,8 @@
     "Entries": [{
         "TargetName": "a",
         "InstallationCommands": {
-            "linux": ["a", "b", "c"]
+            "apt": {},
+            "yum": {}
         }
     }]
 }

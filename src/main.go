@@ -1,25 +1,29 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"flag"
-	"runtime"
+	"fmt"
 	"io/ioutil"
 	"os"
-	"encoding/json"
+	"os/exec"
+	"runtime"
 )
+
 type HostInfo struct {
 	KernelFamily string
 }
 
 type Environment struct {
-	Host 			HostInfo
-	Targets			[]string
+	Host            HostInfo
+	PackageManagers []string
+	Targets         []string
+	Euid            int
 }
 
 type DatabaseEntry struct {
-	TargetName 			   string
-	InstallationCommands   map[string][]string
+	TargetName           string
+	InstallationCommands map[string]map[string]string
 }
 
 type Database struct {
@@ -41,10 +45,18 @@ func main() {
 
 func probeEnvironment() Environment {
 	result := Environment{}
-	result.Host.KernelFamily = runtime.GOOS
-
 	flag.Parse()
 	result.Targets = flag.Args()
+
+	result.Host.KernelFamily = runtime.GOOS
+
+	for _, PkgMgr := range []string{"apt", "yum", "brew", "apk"} {
+		if _, err := exec.LookPath(PkgMgr); err == nil {
+			result.PackageManagers = append(result.PackageManagers, PkgMgr)
+		}
+	}
+
+	result.Euid = os.Geteuid()
 	return result
 }
 

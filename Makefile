@@ -5,7 +5,7 @@ CC=go build
 COPTS=
 
 all:
-	$(CC) $(COPTS) $(FILES)
+	$(CC) -o gimme $(COPTS) $(FILES) 
 
 clean:
-	-rm main *.o
+	-rm gimme *.o
